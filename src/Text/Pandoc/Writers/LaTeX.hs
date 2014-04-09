@@ -807,8 +807,11 @@ inlineToLaTeX (Quoted qt lst) = do
 inlineToLaTeX (Str str) = liftM text $ stringToLaTeX TextString str
 inlineToLaTeX (Math InlineMath str) =
   return $ "\\(" <> text str <> "\\)"
-inlineToLaTeX (Math DisplayMath str) =
-  return $ "\\[" <> text str <> "\\]"
+inlineToLaTeX (Math DisplayMath str) = do
+  opts <- gets stOptions
+  if writerEscapeOuterMath opts && isInfixOf "\n" str
+    then return $ text str
+    else return $ "\\[" <> text str <> "\\]"
 inlineToLaTeX (RawInline f str)
   | f == Format "latex" || f == Format "tex"
                         = return $ text str

@@ -205,6 +205,7 @@ data Opt = Opt
     , optSetextHeaders     :: Bool       -- ^ Use atx headers for markdown level 1-2
     , optAscii             :: Bool       -- ^ Use ascii characters only in html
     , optTeXLigatures      :: Bool       -- ^ Use TeX ligatures for quotes/dashes
+    , optEscapeOuterMath   :: Bool       -- ^ Escape from DisplayMath $$..$$ and \[..\] in latex
     , optDefaultImageExtension :: String -- ^ Default image extension
     , optExtractMedia      :: Maybe FilePath -- ^ Path to extract embedded media
     , optTrace             :: Bool       -- ^ Print debug information
@@ -267,6 +268,7 @@ defaultOpts = Opt
     , optSetextHeaders         = True
     , optAscii                 = False
     , optTeXLigatures          = True
+    , optEscapeOuterMath       = False
     , optDefaultImageExtension = ""
     , optExtractMedia          = Nothing
     , optTrace                 = False
@@ -601,6 +603,11 @@ options =
                  (NoArg
                   (\opt -> return opt { optTeXLigatures = False }))
                  "" -- "Don't use tex ligatures for quotes, dashes"
+
+    , Option "" ["tex-escape-outer-math"]
+                 (NoArg
+                  (\opt -> return opt { optEscapeOuterMath = True }))
+                 "" -- "Escape from DisplayMath $$..$$ \[..\] in latex"
 
     , Option "" ["listings"]
                  (NoArg
@@ -1096,6 +1103,7 @@ main = do
               , optSetextHeaders         = setextHeaders
               , optAscii                 = ascii
               , optTeXLigatures          = texLigatures
+              , optEscapeOuterMath       = texEscapeOuterMath
               , optDefaultImageExtension = defaultImageExtension
               , optExtractMedia          = mbExtractMedia
               , optTrace                 = trace
@@ -1316,6 +1324,7 @@ main = do
                             writerHighlightStyle   = highlightStyle,
                             writerSetextHeaders    = setextHeaders,
                             writerTeXLigatures     = texLigatures,
+                            writerEscapeOuterMath  = texEscapeOuterMath,
                             writerEpubMetadata     = epubMetadata,
                             writerEpubStylesheet   = epubStylesheet,
                             writerEpubFonts        = epubFonts,
